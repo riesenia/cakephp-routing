@@ -1,0 +1,12 @@
+image: rshop/pipeline:8.1
+
+pipelines:
+  default:
+    - step:
+        name: Test
+        caches:
+          - composer
+        script:
+          - composer install
+          - php-cs-fixer fix --dry-run --stop-on-violation
+          - phpstan
