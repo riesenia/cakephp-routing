@@ -65,7 +65,7 @@ class RoutesCommand extends Command
 
     public function execute(Arguments $args, ConsoleIo $io): void
     {
-        $namespaces = $this->getArray('Routing.namespaces');
+        $namespaces = $this->getArray(Configure::read('Routing.namespaces', ['\\App\\']));
         $controllers = [];
 
         foreach ($namespaces as $controllerNs) {

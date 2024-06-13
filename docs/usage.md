@@ -1,6 +1,17 @@
 ## Overview
 The `riesenia/routing` package allows you to define routes using class attributes  in your controllers. These routes are then compiled into a `routes_compiled.php` file, which is included in your application's `routes.php` file.
 
+## Configuration
+
+if you want to add routes for controllers not in the default app namespace, add new key `namespaces`
+```php
+return [
+    'Routing' => [
+        'namespaces' => ['\\Plugin\\']
+    ]
+];
+```
+
 ## Defining routes
 Define your routes using the `Resource` attribute.
 ```php
