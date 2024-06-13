@@ -1,5 +1,5 @@
 {
-    "name": "riesenia/routing",
+    "name": "riesenia/cakephp-routing",
     "description": "cakephp attribute routing",
     "homepage": "https://cakephp.org",
     "type": "library",
