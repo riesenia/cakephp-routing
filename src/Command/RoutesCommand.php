@@ -79,11 +79,11 @@ class RoutesCommand extends Command
 
         foreach ($this->getRoutes() as $key => $resources) {
             [$scope, $plugin] = \explode(',', $key);
-            $plugin = \var_export(['plugin' => $plugin], true);
+            $plugin = $this->custom_var_export(['plugin' => $plugin]);
             $phpCode .= "\$routes->scope('{$scope}', {$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
 
             foreach ($resources as $value) {
-                $options = $this->exportOptions($value->getOptions());
+                $options = $this->custom_var_export($value->getOptions());
                 $phpCode .= "    \$builder->resources('{$value->getName()}', {$options});\n";
             }
 
@@ -101,20 +101,22 @@ class RoutesCommand extends Command
         return \is_array($value) ? (array) $value : throw new \InvalidArgumentException('Value is not a string!');
     }
 
-    /**
-     * @param array{only: string[], map: array{method?: string, path?: string, action?: string}, path: string|null} $options
-     */
-    private function exportOptions(array $options): string
+    private function custom_var_export(mixed $var): string
     {
-        $formattedOptions = [];
+        switch (\gettype($var)) {
+            case 'array':
+                $indexed = \array_keys($var) === \range(0, \count($var) - 1);
+                $formatted = [];
 
-        foreach ($options as $key => $value) {
-            $formattedValue = \is_array($value)
-                ? '[' . \implode(', ', \array_map(fn ($v) => \var_export($v, true), $value)) . ']'
-                : \var_export($value, true);
-            $formattedOptions[] = "'{$key}' => {$formattedValue}";
+                foreach ($var as $key => $value) {
+                    $formatted[] = ($indexed ? '' : \var_export($key, true) . ' => ')
+                        . $this->custom_var_export($value);
+                }
+
+                return '[' . \implode(', ', $formatted) . ']';
+
+            default:
+                return \var_export($var, true);
         }
-
-        return '[' . \implode(', ', $formattedOptions) . ']';
     }
 }
