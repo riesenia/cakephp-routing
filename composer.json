@@ -1,12 +1,13 @@
 {
-    "name": "riesenia/cakephp-routing",
+    "name": "riesenia/routing",
     "description": "cakephp attribute routing",
     "homepage": "https://cakephp.org",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "cakephp/cakephp": "^5.0.1"
+        "cakephp/cakephp": "^5.0.1",
+        "mixerapi/core": "^2.0"
     },
     "require-dev": {
         "rshop/php-cs-fixer-config": "^3.0"

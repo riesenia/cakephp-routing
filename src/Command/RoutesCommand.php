@@ -12,12 +12,19 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
+use MixerApi\Core\Utility\NamespaceUtility;
 use Riesenia\Routing\Router;
 
 class RoutesCommand extends Command
 {
     public function execute(Arguments $args, ConsoleIo $io): void
     {
+        $namespaces = Configure::read('Routing.namespaces');
+
+        foreach ($namespaces as $controllerNs) {
+            $controllers = NamespaceUtility::findClasses($controllerNs . 'Controller');
+            \var_dump($controllers);
+        }
         $controllerFiles = \glob(APP . 'Controller/*Controller.php');
 
         if ($controllerFiles === false) {
