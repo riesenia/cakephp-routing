@@ -14,13 +14,12 @@ class Resource
     protected string $name;
 
     /**
-     * @param array<string,string>                                  $plugin
      * @param string[]                                              $only
      * @param array{method?: string, path?: string,action?: string} $map
      */
     public function __construct(
         protected string $scope = '/',
-        protected array $plugin = [],
+        protected ?string $plugin = null,
         protected array $only = [],
         protected array $map = [],
         protected ?string $path = null
@@ -37,10 +36,7 @@ class Resource
         return $this->scope;
     }
 
-    /**
-     * @return array<string,string>
-     */
-    public function getPlugin(): array
+    public function getPlugin(): ?string
     {
         return $this->plugin;
     }
