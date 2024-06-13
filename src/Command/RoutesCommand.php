@@ -65,12 +65,7 @@ class RoutesCommand extends Command
 
     public function execute(Arguments $args, ConsoleIo $io): void
     {
-        $namespaces = $this->getArray(Configure::read('Routing.namespaces', ['\\App\\']));
-        $controllers = [];
-
-        foreach ($namespaces as $controllerNs) {
-            $controllers = \array_merge(NamespaceUtility::findClasses($controllerNs . 'Controller'), $controllers);
-        }
+        $controllers = \array_reduce($this->getArray(Configure::read('Routing.namespaces', ['\\App\\'])), fn ($carry, $controllerNs) => \array_merge($carry, NamespaceUtility::findClasses($controllerNs . 'Controller')), []);
 
         if (empty($controllers)) {
             $io->error('No controllers found in the application.');
