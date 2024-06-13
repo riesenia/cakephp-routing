@@ -34,7 +34,7 @@ class RoutesCommand extends Command
         }
 
         $controllers = \array_map(fn ($controllerFile) => 'App\\Controller\\' . \basename($controllerFile, '.php'), $controllerFiles);
-        Configure::write('Controllers', $controllers);
+        Configure::write('Routing.Controllers', $controllers);
 
         $phpCode = "<?php\n\$routes->setRouteClass(\\Cake\\Routing\\Route\\DashedRoute::class);\n\n";
 

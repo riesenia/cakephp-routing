@@ -32,7 +32,7 @@ class Router
      */
     public function getRoutes(): array
     {
-        foreach ($this->getArray(Configure::read('Controllers')) as $controller) {
+        foreach ($this->getArray(Configure::read('Routing.Controllers')) as $controller) {
             if (!\is_string($controller) || !\class_exists($controller)) {
                 continue;
             }
