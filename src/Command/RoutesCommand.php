@@ -14,15 +14,16 @@ use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use MixerApi\Core\Utility\NamespaceUtility;
 use Riesenia\Routing\Attributes\Resource;
+use Riesenia\Routing\Attributes\Route;
 
 class RoutesCommand extends Command
 {
     /**
-     * @var array<string,array<\Riesenia\Routing\Attributes\Resource>>
+     * @var array<string,array<\Riesenia\Routing\Attributes\Resource|\Riesenia\Routing\Attributes\Route>>
      */
     protected array $resources = [];
 
-    public function addRoute(Resource $route): void
+    public function addRoute(Resource|Route $route): void
     {
         $this->resources[$route->getScope() . ',' . $route->getPlugin()][] = $route;
     }
@@ -32,7 +33,7 @@ class RoutesCommand extends Command
      *
      * @throws \ReflectionException
      *
-     * @return array<string,array<\Riesenia\Routing\Attributes\Resource>>
+     * @return array<string,array<\Riesenia\Routing\Attributes\Resource|\Riesenia\Routing\Attributes\Route>>
      */
     public function getRoutes(): array
     {
@@ -42,15 +43,31 @@ class RoutesCommand extends Command
             }
 
             $reflectedClass = new \ReflectionClass($controller);
+            $className = \substr($reflectedClass->getShortName(), 0, -10);
 
+            // add method attributes
+            foreach ($reflectedClass->getMethods() as $method) {
+                foreach ($method->getAttributes() as $attribute) {
+                    $instance = $attribute->newInstance();
+
+                    if (!$instance instanceof Route) {
+                        continue;
+                    }
+
+                    $methodName = $method->getName();
+                    $instance->setAction("{$className}::{$methodName}");
+                    $this->addRoute($instance);
+                }
+            }
+
+            // add class attributes
             foreach ($reflectedClass->getAttributes() as $attribute) {
                 $instance = $attribute->newInstance();
 
                 if (!$instance instanceof Resource) {
                     continue;
                 }
-
-                $instance->setName(\substr($reflectedClass->getShortName(), 0, -10));
+                $instance->setName($className);
                 $this->addRoute($instance);
             }
         }
@@ -80,11 +97,19 @@ class RoutesCommand extends Command
         foreach ($this->getRoutes() as $key => $resources) {
             [$scope, $plugin] = \explode(',', $key);
             $plugin = $this->custom_var_export(['plugin' => $plugin]);
+            \var_dump($resources);
             $phpCode .= "\$routes->scope('{$scope}', {$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
 
             foreach ($resources as $value) {
-                $options = $this->custom_var_export($value->getOptions());
-                $phpCode .= "    \$builder->resources('{$value->getName()}', {$options});\n";
+                if ($value instanceof Resource) {
+                    $options = $this->custom_var_export($value->getOptions());
+                    $phpCode .= "    \$builder->resources('{$value->getName()}', {$options});\n";
+                }
+
+                if ($value instanceof Route) {
+                    $options = $this->custom_var_export($value->getOptions());
+                    $phpCode .= "    \$builder->connect('{$value->getUri()}', '{$value->getAction()}',{$options});\n";
+                }
             }
 
             $phpCode .= "});\n\n";

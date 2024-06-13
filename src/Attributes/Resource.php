@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Riesenia\Routing\Attributes;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class Resource
+class Resource extends Attribute
 {
     /**
      * Regular expression for auto increment IDs.
@@ -34,8 +34,6 @@ class Resource
      * @param mixed[]                                               $actions
      */
     public function __construct(
-        protected string $scope = '/',
-        protected ?string $plugin = null,
         protected array $only = [],
         protected array $map = [],
         protected ?string $path = null,
@@ -43,23 +41,11 @@ class Resource
         protected string $inflect = 'dasherize',
         protected string $id = self::ID . '|' . self::UUID,
         protected array $actions = [],
-        protected ?string $prefix = null
+        protected ?string $prefix = null,
+        protected string $scope = '/',
+        protected ?string $plugin = null
     ) {
-        $this->initialize();
-    }
-
-    public function initialize(): void
-    {
-    }
-
-    public function getScope(): string
-    {
-        return $this->scope;
-    }
-
-    public function getPlugin(): ?string
-    {
-        return $this->plugin;
+        parent::__construct($scope, $plugin);
     }
 
     /**
