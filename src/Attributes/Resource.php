@@ -25,8 +25,6 @@ class Resource extends Attribute
      */
     public const UUID = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}';
 
-    protected string $name;
-
     /**
      * @param string[]                                              $only
      * @param array{method?: string, path?: string,action?: string} $map
@@ -54,15 +52,5 @@ class Resource extends Attribute
     public function getOptions(): array
     {
         return ['only' => $this->only, 'map' => $this->map, 'path' => $this->path];
-    }
-
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 }

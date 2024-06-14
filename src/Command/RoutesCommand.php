@@ -55,7 +55,10 @@ class RoutesCommand extends Command
                     }
 
                     $methodName = $method->getName();
+
+                    $instance->setName('/' . \strtolower($className));
                     $instance->setAction("{$className}::{$methodName}");
+
                     $this->addRoute($instance);
                 }
             }
@@ -97,7 +100,7 @@ class RoutesCommand extends Command
         foreach ($this->getRoutes() as $key => $resources) {
             [$scope, $plugin] = \explode(',', $key);
             $plugin = $this->custom_var_export(['plugin' => $plugin]);
-            \var_dump($resources);
+
             $phpCode .= "\$routes->scope('{$scope}', {$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
 
             foreach ($resources as $value) {
