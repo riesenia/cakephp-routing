@@ -23,7 +23,7 @@ class Route extends Attribute
 
     public function getUri(): string
     {
-        return $this->name . '/' . $this->uri;
+        return \strpos($this->uri, '/') === 0 ? $this->name . $this->uri : $this->name . '/' . $this->uri;
     }
 
     public function getAction(): ?string
