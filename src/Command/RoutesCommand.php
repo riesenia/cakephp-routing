@@ -12,7 +12,7 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
-use MixerApi\Core\Utility\NamespaceUtility;
+use Kcs\ClassFinder\Finder\ComposerFinder;
 use Riesenia\Routing\Attributes\Resource as ResourceRoute;
 use Riesenia\Routing\Attributes\Route;
 
@@ -85,7 +85,11 @@ class RoutesCommand extends Command
 
     public function execute(Arguments $args, ConsoleIo $io): void
     {
-        $controllers = \array_reduce($this->getArray(Configure::read('Routing.namespaces', ['\\App\\'])), fn ($carry, $controllerNs) => \array_merge($carry, NamespaceUtility::findClasses($controllerNs . 'Controller')), []);
+        $finder = (new ComposerFinder())
+            ->inNamespace(\array_map(fn ($namespace) => \trim($namespace, '\\'), $this->getArray(Configure::read('Routing.namespaces', ['\\App\\']))))
+            ->path('Controller');
+
+        $controllers = \array_keys(\iterator_to_array($finder));
 
         if (empty($controllers)) {
             $io->error('No controllers found in the application.');
