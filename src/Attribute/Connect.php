@@ -6,10 +6,10 @@
  */
 declare(strict_types=1);
 
-namespace Riesenia\Routing\Attributes;
+namespace Riesenia\Routing\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
-class Route extends Attribute
+class Connect extends Route
 {
     /** @param string[] $options */
     public function __construct(
@@ -19,6 +19,7 @@ class Route extends Attribute
         protected string $scope = '/',
         protected ?string $plugin = null
     ) {
+        $this->initialize();
     }
 
     public function getUri(): string

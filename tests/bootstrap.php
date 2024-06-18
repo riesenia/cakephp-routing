@@ -23,7 +23,7 @@ if (!\defined('DS')) {
 \define('ROOT', \dirname(__DIR__));
 \define('APP_DIR', 'test_app');
 \define('APP', ROOT . DS . 'tests' . DS . APP_DIR . DS);
-\define('CONFIG', APP . DS . 'config' . DS);
+\define('CONFIG', APP . 'config' . DS);
 \define('WWW_ROOT', APP . 'webroot' . DS);
 \define('TESTS', ROOT . DS . 'tests' . DS);
 \define('TMP', ROOT . DS . 'tmp' . DS);
@@ -65,7 +65,7 @@ $config = [
         ],
     ],
     'Routing' => [
-        'namespaces' => ['\\Riesenia\\Routing\\App\\']
+        'namespaces' => ['\Riesenia\Routing\App']
     ],
     'Datasources' => [
         'test' => ['url' => \getenv('DATABASE_TEST_URL')]

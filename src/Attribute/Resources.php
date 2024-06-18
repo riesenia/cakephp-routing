@@ -6,10 +6,10 @@
  */
 declare(strict_types=1);
 
-namespace Riesenia\Routing\Attributes;
+namespace Riesenia\Routing\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-class Resource extends Attribute
+class Resources extends Route
 {
     /**
      * Regular expression for auto increment IDs.
@@ -43,7 +43,7 @@ class Resource extends Attribute
         protected string $scope = '/',
         protected ?string $plugin = null
     ) {
-        parent::__construct($scope, $plugin);
+        $this->initialize();
     }
 
     /**

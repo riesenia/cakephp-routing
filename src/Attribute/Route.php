@@ -6,16 +6,16 @@
  */
 declare(strict_types=1);
 
-namespace Riesenia\Routing\Attributes;
+namespace Riesenia\Routing\Attribute;
 
-abstract class Attribute
+abstract class Route
 {
     protected string $name;
+    protected string $scope = '/';
+    protected ?string $plugin = null;
 
-    public function __construct(
-        protected string $scope = '/',
-        protected ?string $plugin = null,
-    ) {
+    public function initialize(): void
+    {
     }
 
     public function getScope(): string
