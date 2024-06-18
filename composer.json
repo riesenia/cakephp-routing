@@ -30,8 +30,8 @@
         }
     },
     "scripts": {
-        "fixer": "docker run -it --rm -v $PWD:/var/www/html rshop/pipeline:8.1 bash -c \"cd /var/www/html && php-cs-fixer fix\"",
-        "phpstan": "docker run -it --rm -v $PWD:/var/www/html rshop/pipeline:8.1 bash -c \"cd /var/www/html && phpstan\""
+        "fixer": "docker run --rm -v $PWD:/var/www/html rshop/pipeline:8.1 bash -c \"cd /var/www/html && php-cs-fixer fix\"",
+        "phpstan": "docker run  --rm -v $PWD:/var/www/html rshop/pipeline:8.1 bash -c \"cd /var/www/html && phpstan\""
     },
     "config": {
         "allow-plugins": {
