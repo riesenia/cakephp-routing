@@ -27,7 +27,7 @@ jobs:
       run: composer fix
 
     - name: Run phpstan
-      run: composer stan
+      run: composer phpstan
     
     - name: Run phpunit
       run: vendor/bin/phpunit
