@@ -6,6 +6,8 @@
  */
 declare(strict_types=1);
 
-return static function () {
+use Cake\Routing\RouteBuilder;
+
+return static function (RouteBuilder $routes) {
     require CONFIG . 'routes_compiled.php';
 };

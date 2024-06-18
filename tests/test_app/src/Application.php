@@ -12,7 +12,6 @@ use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\Routing\RouteBuilder;
 
 class Application extends BaseApplication
 {
@@ -24,10 +23,5 @@ class Application extends BaseApplication
     public function bootstrap(): void
     {
         $this->addPlugin('Riesenia/Routing');
-    }
-
-    public function routes(RouteBuilder $routes): void
-    {
-        require CONFIG . 'routes_compiled.php';
     }
 }
