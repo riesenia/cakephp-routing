@@ -16,11 +16,6 @@ abstract class Attribute
         protected string $scope = '/',
         protected ?string $plugin = null,
     ) {
-        $this->initialize();
-    }
-
-    public function initialize(): void
-    {
     }
 
     public function getScope(): string
