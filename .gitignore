@@ -1,0 +1,26 @@
+composer.lock
+/vendor
+/tests/test_app/config/routes_compiled.php
+# Tool specific files #
+#######################
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache
+# fixer
+.php-cs-fixer.cache
+# Eclipse
+.settings/*
+# JetBrains
+.idea/*
+# Visual Studio Code
+.vscode
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashesehthumbs.db
+Thumbs.db
+.directory
