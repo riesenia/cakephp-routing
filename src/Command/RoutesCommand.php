@@ -19,7 +19,7 @@ use Riesenia\Routing\Attributes\Route;
 class RoutesCommand extends Command
 {
     /**
-     * @var array<string,array<\Riesenia\Routing\Attributes\Resource|\Riesenia\Routing\Attributes\Route>>
+     * @var array<string,array<\Riesenia\Routing\Attributes\Resource|Route>>
      */
     protected array $resources = [];
 
@@ -33,7 +33,7 @@ class RoutesCommand extends Command
      *
      * @throws \ReflectionException
      *
-     * @return array<string,array<\Riesenia\Routing\Attributes\Resource|\Riesenia\Routing\Attributes\Route>>
+     * @return array<string,array<\Riesenia\Routing\Attributes\Resource|Route>>
      */
     public function getRoutes(): array
     {

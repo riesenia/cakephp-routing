@@ -33,8 +33,6 @@ class Route extends Attribute
 
     /**
      * Allow setting action name in already initialized Route instance.
-     *
-     * @param string $action Action Name
      */
     public function setAction(string $action): void
     {

@@ -47,7 +47,7 @@ class Resource extends Attribute
     }
 
     /**
-     * @return array{only: string[], map: array{method?: string, path?: string, action?: string}, path: string|null}
+     * @return mixed[]
      */
     public function getOptions(): array
     {
