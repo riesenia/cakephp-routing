@@ -1,5 +1,5 @@
 ## Overview
-The `riesenia/routing` package allows you to define routes using class attributes  in your controllers. These routes are then compiled into a `routes_compiled.php` file, which is included in your application's `routes.php` file.
+The `riesenia/cakephp-routing` package allows you to define routes using class attributes  in your controllers. These routes are then compiled into a `routes_compiled.php` file, which is included in your application's `routes.php` file.
 
 ## Configuration
 
