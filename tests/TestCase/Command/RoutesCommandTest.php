@@ -69,32 +69,34 @@ class RoutesCommandTest extends TestCase
 
         $this->assertFileExists($file, 'routes_compiled file was not generated');
 
-        // test overwritten routes
+        // test  Riesenia\Routing plugin attribute
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->get('/items');
-        $this->assertResponseCode(404);
-
-        // test resource attribute
-        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->get('/items/1');
+        $this->get('items/1');
         $this->assertResponseCode(200);
 
+        // test  Riesenia\Core plugin attribute with api scope
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->delete('/items/1');
-        $this->assertResponseCode(404);
-
-        // test route attribute
-        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->get('/items/cool-item');
-        $this->assertResponseCode(200);
-        $body = \json_decode((string) $this->_response->getBody());
-        $this->assertEquals(5, \count($body));
-
-        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->get('/api/authors');
+        $this->get('api/authors');
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(2, \count($body));
         $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('authors/1');
+        $this->assertResponseCode(404);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('api/authors/1');
+        $this->assertResponseCode(200);
+
+        // test  Riesenia\Core plugin attribute with admin scope
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->delete('admin/authors/1');
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->delete('api/authors/1');
+        $this->assertResponseCode(404);
     }
 
     public function setUp(): void
