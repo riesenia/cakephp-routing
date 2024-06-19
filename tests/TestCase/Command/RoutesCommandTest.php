@@ -23,8 +23,9 @@ class RoutesCommandTest extends TestCase
 
     public function testExecute()
     {
-        $this->exec('riesenia:routes');
         $file = CONFIG . 'routes_compiled.php';
+
+        $this->exec('routes:build -n Riesenia\Routing\App');
         $this->assertFileExists($file, 'routes_compiled file was not generated');
 
         // test overwritten routes

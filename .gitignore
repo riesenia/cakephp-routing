@@ -1,6 +1,7 @@
 composer.lock
 /vendor
-/tests/test_app/config/routes_compiled.php
+/tests/test_app/config/
+
 # Tool specific files #
 #######################
 # PHPUnit

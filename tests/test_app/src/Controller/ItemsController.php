@@ -10,10 +10,10 @@ namespace Riesenia\Routing\App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\View\JsonView;
-use Riesenia\Routing\Attributes\Resource;
-use Riesenia\Routing\Attributes\Route;
+use Riesenia\Routing\Attribute\Connect;
+use Riesenia\Routing\Attribute\Resources;
 
-#[Resource(only: ['view'])]
+#[Resources(only: ['view'])]
 class ItemsController extends Controller
 {
     public function viewClasses(): array
@@ -21,7 +21,7 @@ class ItemsController extends Controller
         return [JsonView::class];
     }
 
-    #[Route(uri: 'cool-item')]
+    #[Connect(uri: 'cool-item')]
     public function index()
     {
         $this->set('data', $this->fetchTable()->find()->all());
