@@ -24,12 +24,8 @@ class RoutesCommandTest extends TestCase
 
     public function testExecute()
     {
-        $file = CONFIG . 'routes_compiled.php';
+        list($file, $routes) = $this->createFiles();
 
-        if (\file_exists($file)) {
-            \unlink($file);
-        }
-        \touch($file);
         $this->exec('routes:build -n Riesenia\Routing\App');
         $this->assertFileExists($file, 'routes_compiled file was not generated');
 
@@ -54,16 +50,14 @@ class RoutesCommandTest extends TestCase
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(5, \count($body));
         $this->assertResponseCode(200);
+
+        \unlink($file);
+        \unlink($routes);
     }
 
     public function testWith2Namespaces()
     {
-        $file = CONFIG . 'routes_compiled.php';
-
-        if (\file_exists($file)) {
-            \unlink($file);
-        }
-        \touch($file);
+        list($file, $routes) = $this->createFiles();
 
         $this->exec('routes:build -n Riesenia\Routing\App -n Riesenia\Core');
 
@@ -97,6 +91,57 @@ class RoutesCommandTest extends TestCase
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->delete('api/authors/1');
         $this->assertResponseCode(404);
+
+        \unlink($file);
+        \unlink($routes);
+    }
+
+    public function testWithNewFileName()
+    {
+        list($file, $routes) = $this->createFiles(CONFIG . 'routes.php', CONFIG . 'core_routes.php');
+
+        $this->exec('routes:build -n Riesenia\Core ' . $file);
+        $this->assertFileExists($file, 'routes file was generated');
+        $this->assertFileExists($routes, 'core routes file was generated');
+
+        // assert endpoints for core plugin
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('api/authors');
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('api/authors/1');
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->delete('admin/authors/1');
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->delete('api/authors/1');
+        $this->assertResponseCode(404);
+
+        // assert endpoints for routing plugin
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('items/1');
+        $this->assertResponseCode(404);
+
+        \unlink($file);
+        \unlink($routes);
+    }
+
+    private function createFiles($file = CONFIG . 'routes.php', $compiled = CONFIG . 'routes_compiled.php')
+    {
+        if (!\file_exists($compiled)) {
+            \touch($compiled);
+        }
+
+        if (!\file_exists($file)) {
+            \touch($file);
+        }
+        \file_put_contents($file, "<?php\nreturn static function (\\Cake\\Routing\\RouteBuilder \$routes) {\n require '{$compiled}';\n};");
+
+        return [$file, $compiled];
     }
 
     public function setUp(): void
