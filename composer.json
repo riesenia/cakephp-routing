@@ -25,7 +25,6 @@
             "Riesenia\\Routing\\Test\\": "tests/",
             "Riesenia\\Routing\\App\\": "tests/test_app/src/",
             "Riesenia\\Core\\": "tests/test_app/plugins/core/src/"
-
         }
     }
 }
