@@ -23,5 +23,6 @@ class Application extends BaseApplication
     public function bootstrap(): void
     {
         $this->addPlugin('Riesenia/Routing');
+        $this->addPlugin('Riesenia/Core');
     }
 }

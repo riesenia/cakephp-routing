@@ -3,25 +3,37 @@ The `riesenia/cakephp-routing` package allows you to define routes using class a
 
 ## Configuration
 
-if you want to add routes for controllers not in the default app namespace, add new key `namespaces`
-```php
-return [
-    'Routing' => [
-        'namespaces' => ['\\Plugin\\']
-    ]
-];
+if you want to add routes for controllers not in the default app namespace `APP`, pass `namespace` option to the command
+```bash
+routes:build -n Plugin
 ```
 
 ## Defining routes
-Define your routes using the `Resource` attribute.
+
+1. Define your class routes using the `Resources` attribute.
 ```php
 <?php
 namespace App\Controller;
-use Riesenia\Routing\Attributes\Resource;
+use Riesenia\Routing\Attribute\Resources;
 
-#[Resource(only: ['index', 'view'])]
+#[Resources(only: ['index', 'view'])]
 class AuthorsController extends AppController
 {
+}
+```
+
+2. Define your method routes using the `Connect` attribute.
+```php
+<?php
+namespace App\Controller;
+use Riesenia\Routing\Attribute\Connect;
+
+class AuthorsController extends AppController
+{
+    #[Connect(uri: 'cool-item')]
+    public function index()
+    {
+    }
 }
 ```
 

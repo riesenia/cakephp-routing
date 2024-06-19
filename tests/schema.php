@@ -16,5 +16,13 @@ return [
             'quantity' => ['type' => 'integer', 'default' => 0],
         ],
         'constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
+    ],
+    [
+        'table' => 'authors',
+        'columns' => [
+            'id' => ['type' => 'integer'],
+            'name' => ['type' => 'string', 'default' => null],
+        ],
+        'constraints' => ['primary' => ['type' => 'primary', 'columns' => ['id']]]
     ]
 ];
