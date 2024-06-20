@@ -118,3 +118,4 @@ if (env('FIXTURE_SCHEMA_METADATA')) {
 
 // load the plugin
 Plugin::getCollection()->add(new \Riesenia\Routing\Plugin());
+Plugin::getCollection()->add(new \Riesenia\Core\Plugin());

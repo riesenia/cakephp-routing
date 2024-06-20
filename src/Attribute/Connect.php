@@ -13,7 +13,7 @@ class Connect extends Route
 {
     /** @param string[] $options */
     public function __construct(
-        protected string $uri,
+        protected string $uri = '',
         protected ?string $action = null,
         protected ?array $options = [],
         protected string $scope = '/',
@@ -24,7 +24,7 @@ class Connect extends Route
 
     public function getUri(): string
     {
-        return \strpos($this->uri, '/') === 0 ? $this->name . $this->uri : $this->name . '/' . $this->uri;
+        return $this->name . ($this->uri ? (\strpos($this->uri, '/') === 0 ? '' : '/') . $this->uri : '');
     }
 
     public function getAction(): ?string
