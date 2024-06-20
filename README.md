@@ -23,6 +23,8 @@ class AuthorsController extends AppController
 ```
 
 2. Define your method routes using the `Connect` attribute.
+
+When defining routes using the `Connect` attribute in PHP, adding `/` to the URI will stop prefixing your route with the controller name.
 ```php
 <?php
 namespace App\Controller;
@@ -30,11 +32,24 @@ use Riesenia\Routing\Attribute\Connect;
 
 class AuthorsController extends AppController
 {
-    #[Connect(uri: 'cool-item')]
+    #[Connect(uri: 'cool-author')]
     public function index()
     {
+        // Controller logic for /authors/cool-author
+    }
+
+    #[Connect(uri: '/custom-author')]
+    public function custom()
+    {
+        // Controller logic for /custom-author
     }
 }
+```
+#### Resulting Routes:
+
+```php
+$builder->connect('/authors/cool-author', 'Authors::index',[]);
+$builder->connect('/custom-author', 'Authors::custom',[]);
 ```
 
 ## Compiling Routes
