@@ -7,15 +7,14 @@
 declare(strict_types=1);
 
 use Cake\Core\Configure;
-
-use function Cake\Core\env;
-
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Engine\FileLog;
 use Cake\Log\Log;
 use Cake\TestSuite\Fixture\SchemaLoader;
 use Cake\Utility\Security;
+
+use function Cake\Core\env;
 
 if (!\defined('DS')) {
     \define('DS', DIRECTORY_SEPARATOR);
