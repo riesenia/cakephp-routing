@@ -13,23 +13,22 @@ use Cake\View\JsonView;
 use Riesenia\Routing\Attribute\Connect;
 use Riesenia\Routing\Attribute\Resources;
 
-#[Resources(only: ['view'])]
-class ItemsController extends Controller
+#[Resources]
+class ItemProductsController extends Controller
 {
     public function viewClasses(): array
     {
         return [JsonView::class];
     }
 
-    #[Connect(uri: 'cool-item')]
     public function index()
     {
         $this->set('data', $this->fetchTable()->find()->all());
         $this->viewBuilder()->setOption('serialize', 'data');
     }
 
-    #[Connect(uri: '/custom-item')]
-    public function custom()
+    #[Connect(uri: '/custom-index')]
+    public function customIndex()
     {
         $this->set('data', $this->fetchTable()->find()->all());
         $this->viewBuilder()->setOption('serialize', 'data');

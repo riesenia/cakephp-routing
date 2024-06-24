@@ -24,7 +24,7 @@ class Connect extends Route
 
     public function getUri(): string
     {
-        return $this->name . ($this->uri ? (\strpos($this->uri, '/') === 0 ? '' : '/') . $this->uri : '');
+        return (\strpos($this->uri, '/') === 0 ? '' : $this->name . '/') . $this->uri;
     }
 
     public function getAction(): ?string

@@ -19,6 +19,7 @@ class RoutesCommandTest extends TestCase
 
     public array $fixtures = [
         'plugin.Riesenia/Routing.Items',
+        'plugin.Riesenia/Routing.ItemProducts',
         'plugin.Riesenia/Routing.Authors',
     ];
 
@@ -125,6 +126,53 @@ class RoutesCommandTest extends TestCase
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('items/1');
         $this->assertResponseCode(404);
+
+        \unlink($file);
+        \unlink($routes);
+    }
+
+    public function testNoControllerPrefix()
+    {
+        list($file, $routes) = $this->createFiles();
+
+        $this->exec('routes:build -n Riesenia\Routing\App');
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/custom-item');
+        $this->assertResponseCode(200);
+        $body = \json_decode((string) $this->_response->getBody());
+        $this->assertEquals(5, \count($body));
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/items/custom-item');
+        $this->assertResponseCode(404);
+
+        \unlink($file);
+        \unlink($routes);
+    }
+
+    public function testDashedRoutes()
+    {
+        list($file, $routes) = $this->createFiles();
+
+        $this->exec('routes:build -n Riesenia\Routing\App');
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/item-products/1');
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/item-products');
+        $body = \json_decode((string) $this->_response->getBody());
+        $this->assertEquals(2, \count($body));
+        $this->assertResponseCode(200);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/custom-index');
+        $body = \json_decode((string) $this->_response->getBody());
+        $this->assertEquals(2, \count($body));
+        $this->assertResponseCode(200);
 
         \unlink($file);
         \unlink($routes);
