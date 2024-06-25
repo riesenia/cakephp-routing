@@ -46,10 +46,15 @@ class Resources extends Route
         $this->initialize();
     }
 
+    public function phpCode(): string
+    {
+        return '$builder->resources(' . $this->varExport($this->controller) . ', ' . $this->varExport($this->getOptions()) . ');';
+    }
+
     /**
      * @return mixed[]
      */
-    public function getOptions(): array
+    protected function getOptions(): array
     {
         return ['only' => $this->only, 'map' => $this->map, 'path' => $this->path];
     }

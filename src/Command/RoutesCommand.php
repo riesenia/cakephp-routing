@@ -12,23 +12,19 @@ use Cake\Command\Command;
 use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
-use Cake\Core\Configure;
 use Kcs\ClassFinder\Finder\ComposerFinder;
 use Riesenia\Routing\Attribute\Connect;
 use Riesenia\Routing\Attribute\Resources;
 
 class RoutesCommand extends Command
 {
-    /**
-     * @var array<string,array<Resources|Connect>>
-     */
-    protected array $resources = [];
-
     public function execute(Arguments $args, ConsoleIo $io): void
     {
         $finder = (new ComposerFinder())
             ->inNamespace(\array_map(fn ($ns) => \trim($ns, '\\'), $args->getMultipleOption('namespace') ?? ['App']))
             ->path('Controller');
+
+        $routes = [];
 
         foreach ($finder as $reflectedClass) {
             if (!$reflectedClass instanceof \ReflectionClass) {
@@ -37,7 +33,20 @@ class RoutesCommand extends Command
 
             $className = \substr($reflectedClass->getShortName(), 0, -10);
 
-            // add method attributes
+            // add class attributes (resources)
+            foreach ($reflectedClass->getAttributes() as $attribute) {
+                $instance = $attribute->newInstance();
+
+                if (!$instance instanceof Resources) {
+                    continue;
+                }
+
+                $instance->setController($className);
+
+                $routes[$instance->getScope() . ',' . $instance->getPlugin()][] = $instance;
+            }
+
+            // add method attributes (connect)
             foreach ($reflectedClass->getMethods() as $method) {
                 foreach ($method->getAttributes() as $attribute) {
                     $instance = $attribute->newInstance();
@@ -46,66 +55,31 @@ class RoutesCommand extends Command
                         continue;
                     }
 
-                    $methodName = $method->getName();
+                    $instance->setController($className);
+                    $instance->setAction($method->getName());
 
-                    $instance->setName('/' . \strtolower($className));
-                    $instance->setAction("{$className}::{$methodName}");
-
-                    $this->addRoute($instance);
+                    $routes[$instance->getScope() . ',' . $instance->getPlugin()][] = $instance;
                 }
-            }
-
-            // add class attributes
-            foreach ($reflectedClass->getAttributes() as $attribute) {
-                $instance = $attribute->newInstance();
-
-                if (!$instance instanceof Resources) {
-                    continue;
-                }
-                $instance->setName($className);
-                $this->addRoute($instance);
             }
         }
 
-        $controllers = \array_keys(\iterator_to_array($finder));
+        $phpCode = "<?php\n\$routes->setRouteClass(\\Cake\\Routing\\Route\\DashedRoute::class);\n";
 
-        if (empty($controllers)) {
-            $io->error('No controllers found in the application.');
-
-            return;
-        }
-
-        Configure::write('Routing.Controllers', $controllers);
-
-        $phpCode = "<?php\n\$routes->setRouteClass(\\Cake\\Routing\\Route\\DashedRoute::class);\n\n";
-
-        foreach ($this->resources as $key => $resources) {
+        foreach ($routes as $key => $routes) {
             [$scope, $plugin] = \explode(',', $key);
-            $plugin = $this->custom_var_export(['plugin' => $plugin]);
 
-            $phpCode .= "\$routes->scope('{$scope}', {$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
+            $plugin = $plugin ? ", ['plugin' => '{$plugin}']" : '';
 
-            foreach ($resources as $value) {
-                if ($value instanceof Resources) {
-                    $options = $this->custom_var_export($value->getOptions());
-                    $phpCode .= "    \$builder->resources('{$value->getName()}', {$options});\n";
-                }
+            $phpCode .= "\n\$routes->scope('{$scope}'{$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
 
-                if ($value instanceof Connect) {
-                    $options = $this->custom_var_export($value->getOptions());
-                    $phpCode .= "    \$builder->connect('{$value->getUri()}', '{$value->getAction()}',{$options});\n";
-                }
+            foreach ($routes as $value) {
+                $phpCode .= '    ' . $value->phpCode() . "\n";
             }
 
-            $phpCode .= "});\n\n";
+            $phpCode .= "});\n";
         }
 
         \file_put_contents($args->getArgument('output') ?? CONFIG . 'routes_compiled.php', $phpCode);
-    }
-
-    public function addRoute(Connect|Resources $route): void
-    {
-        $this->resources[$route->getScope() . ',' . $route->getPlugin()][] = $route;
     }
 
     public static function defaultName(): string
@@ -126,24 +100,5 @@ class RoutesCommand extends Command
             ]);
 
         return $parser;
-    }
-
-    private function custom_var_export(mixed $var): string
-    {
-        switch (\gettype($var)) {
-            case 'array':
-                $indexed = \array_keys($var) === \range(0, \count($var) - 1);
-                $formatted = [];
-
-                foreach ($var as $key => $value) {
-                    $formatted[] = ($indexed ? '' : \var_export($key, true) . ' => ')
-                        . $this->custom_var_export($value);
-                }
-
-                return '[' . \implode(', ', $formatted) . ']';
-
-            default:
-                return \var_export($var, true);
-        }
     }
 }

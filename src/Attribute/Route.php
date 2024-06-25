@@ -10,12 +10,17 @@ namespace Riesenia\Routing\Attribute;
 
 abstract class Route
 {
-    protected string $name;
+    protected string $controller;
     protected string $scope = '/';
     protected ?string $plugin = null;
 
     public function initialize(): void
     {
+    }
+
+    public function setController(string $controller): void
+    {
+        $this->controller = $controller;
     }
 
     public function getScope(): string
@@ -28,13 +33,22 @@ abstract class Route
         return $this->plugin;
     }
 
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
+    abstract public function phpCode(): string;
 
-    public function getName(): string
+    protected function varExport(mixed $var): string
     {
-        return $this->name;
+        if (!\is_array($var)) {
+            return \var_export($var, true);
+        }
+
+        $indexed = \array_keys($var) === \range(0, \count($var) - 1);
+
+        $formatted = [];
+
+        foreach ($var as $key => $value) {
+            $formatted[] = ($indexed ? '' : \var_export($key, true) . ' => ') . $this->varExport($value);
+        }
+
+        return '[' . \implode(', ', $formatted) . ']';
     }
 }

@@ -35,6 +35,13 @@ class ItemsController extends Controller
         $this->viewBuilder()->setOption('serialize', 'data');
     }
 
+    #[Connect]
+    public function noUriName()
+    {
+        $this->set('data', $this->fetchTable()->find()->all());
+        $this->viewBuilder()->setOption('serialize', 'data');
+    }
+
     public function view($id)
     {
         $this->set('data', $this->fetchTable()->get($id));
