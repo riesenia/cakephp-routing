@@ -12,4 +12,11 @@ use Cake\Core\BasePlugin;
 
 class Plugin extends BasePlugin
 {
+    protected bool $bootstrapEnabled = false;
+
+    protected bool $middlewareEnabled = false;
+
+    protected bool $servicesEnabled = false;
+
+    protected bool $routesEnabled = false;
 }

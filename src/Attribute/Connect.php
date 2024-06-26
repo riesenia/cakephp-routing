@@ -11,40 +11,38 @@ namespace Riesenia\Routing\Attribute;
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class Connect extends Route
 {
-    /** @param string[] $options */
+    protected string $action;
+
+    /** @param mixed[] $options */
     public function __construct(
         protected string $uri = '',
-        protected ?string $action = null,
-        protected ?array $options = [],
+        protected array $options = [],
         protected string $scope = '/',
         protected ?string $plugin = null
     ) {
         $this->initialize();
     }
 
-    public function getUri(): string
+    public function phpCode(): string
     {
-        return (\strpos($this->uri, '/') === 0 ? '' : $this->name . '/') . $this->uri;
+        return '$builder->connect(' . $this->varExport($this->getUri()) . ', ' . $this->varExport($this->getOptions()) . ');';
     }
 
-    public function getAction(): ?string
-    {
-        return $this->action;
-    }
-
-    /**
-     * Allow setting action name in already initialized Route instance.
-     */
     public function setAction(string $action): void
     {
         $this->action = $action;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getOptions(): ?array
+    protected function getUri(): string
     {
-        return $this->options;
+        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: \strtolower($this->action));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    protected function getOptions(): array
+    {
+        return \array_merge(['controller' => $this->controller, 'action' => $this->action], $this->options);
     }
 }

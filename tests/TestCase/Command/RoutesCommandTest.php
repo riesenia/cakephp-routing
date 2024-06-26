@@ -25,10 +25,7 @@ class RoutesCommandTest extends TestCase
 
     public function testExecute()
     {
-        list($file, $routes) = $this->createFiles();
-
         $this->exec('routes:build -n Riesenia\Routing\App');
-        $this->assertFileExists($file, 'routes_compiled file was not generated');
 
         // test overwritten routes
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -48,21 +45,14 @@ class RoutesCommandTest extends TestCase
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/items/cool-item');
         $this->assertResponseCode(200);
+
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(5, \count($body));
-        $this->assertResponseCode(200);
-
-        \unlink($file);
-        \unlink($routes);
     }
 
     public function testWith2Namespaces()
     {
-        list($file, $routes) = $this->createFiles();
-
         $this->exec('routes:build -n Riesenia\Routing\App -n Riesenia\Core');
-
-        $this->assertFileExists($file, 'routes_compiled file was not generated');
 
         // test  Riesenia\Routing plugin attribute
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -72,6 +62,8 @@ class RoutesCommandTest extends TestCase
         // test  Riesenia\Core plugin attribute with api scope
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('api/authors');
+        $this->assertResponseCode(200);
+
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(2, \count($body));
         $this->assertResponseCode(200);
@@ -92,18 +84,13 @@ class RoutesCommandTest extends TestCase
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->delete('api/authors/1');
         $this->assertResponseCode(404);
-
-        \unlink($file);
-        \unlink($routes);
     }
 
     public function testWithNewFileName()
     {
-        list($file, $routes) = $this->createFiles(CONFIG . 'routes.php', CONFIG . 'core_routes.php');
+        $this->createRoutes(CONFIG . 'core_routes.php');
 
-        $this->exec('routes:build -n Riesenia\Core ' . $file);
-        $this->assertFileExists($file, 'routes file was generated');
-        $this->assertFileExists($routes, 'core routes file was generated');
+        $this->exec('routes:build -n Riesenia\Core ' . CONFIG . 'core_routes.php');
 
         // assert endpoints for core plugin
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -126,36 +113,33 @@ class RoutesCommandTest extends TestCase
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('items/1');
         $this->assertResponseCode(404);
-
-        \unlink($file);
-        \unlink($routes);
     }
 
     public function testNoControllerPrefix()
     {
-        list($file, $routes) = $this->createFiles();
-
         $this->exec('routes:build -n Riesenia\Routing\App');
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/custom-item');
         $this->assertResponseCode(200);
+
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(5, \count($body));
-        $this->assertResponseCode(200);
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/items/custom-item');
         $this->assertResponseCode(404);
 
-        \unlink($file);
-        \unlink($routes);
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/items/no-uri-name');
+        $this->assertResponseCode(200);
+
+        $body = \json_decode((string) $this->_response->getBody());
+        $this->assertEquals(5, \count($body));
     }
 
     public function testDashedRoutes()
     {
-        list($file, $routes) = $this->createFiles();
-
         $this->exec('routes:build -n Riesenia\Routing\App');
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -164,37 +148,47 @@ class RoutesCommandTest extends TestCase
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/item-products');
+        $this->assertResponseCode(200);
+
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(2, \count($body));
-        $this->assertResponseCode(200);
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/custom-index');
-        $body = \json_decode((string) $this->_response->getBody());
-        $this->assertEquals(2, \count($body));
         $this->assertResponseCode(200);
 
-        \unlink($file);
-        \unlink($routes);
+        $body = \json_decode((string) $this->_response->getBody());
+        $this->assertEquals(2, \count($body));
     }
 
-    private function createFiles($file = CONFIG . 'routes.php', $compiled = CONFIG . 'routes_compiled.php')
+    private function createRoutes($file = CONFIG . 'routes_compiled.php'): void
     {
-        if (!\file_exists($compiled)) {
-            \touch($compiled);
+        if (!\file_exists(CONFIG . 'routes.php')) {
+            \touch(CONFIG . 'routes.php');
         }
+
+        \file_put_contents(CONFIG . 'routes.php', "<?php\nreturn static function (\\Cake\\Routing\\RouteBuilder \$routes) {\n    require '{$file}';\n};");
 
         if (!\file_exists($file)) {
             \touch($file);
         }
-        \file_put_contents($file, "<?php\nreturn static function (\\Cake\\Routing\\RouteBuilder \$routes) {\n require '{$compiled}';\n};");
-
-        return [$file, $compiled];
     }
 
     public function setUp(): void
     {
         parent::setUp();
+
         $this->setAppNamespace('Riesenia\Routing\App');
+
+        // create routes files
+        $this->createRoutes();
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        // remove routes files
+        \array_map('unlink', \glob(CONFIG . 'routes*.php'));
     }
 }
