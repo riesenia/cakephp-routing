@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Riesenia\Routing\Attribute;
 
+use Cake\Utility\Inflector;
+
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class Connect extends Route
 {
@@ -25,7 +27,7 @@ class Connect extends Route
 
     public function phpCode(): string
     {
-        return '$builder->connect(' . $this->varExport($this->getUri()) . ', ' . $this->varExport($this->getOptions()) . ');';
+        return '$builder->connect(' . $this->varExport($this->getUri()) . ', ' . $this->varExport(['controller' => $this->controller, 'action' => $this->action]) . ', ' . $this->varExport($this->getOptions()) . ');';
     }
 
     public function setAction(string $action): void
@@ -35,7 +37,7 @@ class Connect extends Route
 
     protected function getUri(): string
     {
-        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: \strtolower($this->action));
+        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action));
     }
 
     /**
@@ -43,6 +45,6 @@ class Connect extends Route
      */
     protected function getOptions(): array
     {
-        return \array_merge(['controller' => $this->controller, 'action' => $this->action], $this->options);
+        return $this->options;
     }
 }

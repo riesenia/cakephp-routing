@@ -56,6 +56,6 @@ class Resources extends Route
      */
     protected function getOptions(): array
     {
-        return ['only' => $this->only, 'map' => $this->map, 'path' => $this->path];
+        return ['only' => $this->only, 'map' => $this->map, 'path' => $this->path, 'connectOptions' => $this->connectOptions, 'inflect' => $this->inflect, 'id' => $this->id, 'actions' => $this->actions, 'prefix' => $this->prefix];
     }
 }
