@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Riesenia\Routing\Attribute;
 
+use Cake\Utility\Inflector;
+
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class Connect extends Route
 {
@@ -35,12 +37,7 @@ class Connect extends Route
 
     protected function getUri(): string
     {
-        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: $this->dashedAction());
-    }
-
-    protected function dashedAction(): string
-    {
-        return \preg_replace_callback('/[A-Z]/', fn ($matches) => '-' . \strtolower($matches[0]), $this->action) ?? throw new \Exception('preg_replace_callback failed');
+        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action));
     }
 
     /**
