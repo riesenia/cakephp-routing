@@ -15,9 +15,13 @@ class Connect extends Route
 {
     protected string $action;
 
-    /** @param mixed[] $options */
+    /**
+     * @param mixed[] $options
+     * @param mixed[] $defaults
+     */
     public function __construct(
         protected string $uri = '',
+        protected array $defaults = [],
         protected array $options = [],
         protected string $scope = '/',
         protected ?string $plugin = null
@@ -27,7 +31,7 @@ class Connect extends Route
 
     public function phpCode(): string
     {
-        return '$builder->connect(' . $this->varExport($this->getUri()) . ', ' . $this->varExport(['controller' => $this->controller, 'action' => $this->action]) . ', ' . $this->varExport($this->getOptions()) . ');';
+        return '$builder->connect(' . $this->varExport($this->getUri()) . ', ' . $this->varExport($this->getDefaults()) . ', ' . $this->varExport($this->getOptions()) . ');';
     }
 
     public function setAction(string $action): void
@@ -37,7 +41,15 @@ class Connect extends Route
 
     protected function getUri(): string
     {
-        return (\str_starts_with($this->uri, '/') ? '' : '/' . \strtolower($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action));
+        return (\str_starts_with($this->uri, '/') ? '' : '/' . Inflector::dasherize($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    protected function getDefaults(): array
+    {
+        return \array_merge(['controller' => $this->controller, 'action' => $this->action], $this->defaults);
     }
 
     /**

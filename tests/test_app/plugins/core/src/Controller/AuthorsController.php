@@ -33,7 +33,7 @@ class AuthorsController extends Controller
         $this->viewBuilder()->setOption('serialize', 'data');
     }
 
-    #[Connect(scope: '/admin', plugin: 'Riesenia/Core', uri: '{id}', options: ['id' => '[0-9]', 'pass' => ['id'], '_method' => 'DELETE'])]
+    #[Connect(scope: '/admin', plugin: 'Riesenia/Core', uri: '{id}', defaults: ['_method' => 'DELETE'], options: ['id' => '[0-9]', 'pass' => ['id']])]
     public function delete($id)
     {
         $this->fetchTable()->delete($this->fetchTable()->get($id));
