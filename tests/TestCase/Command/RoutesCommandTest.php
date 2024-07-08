@@ -88,9 +88,9 @@ class RoutesCommandTest extends TestCase
 
     public function testWithNewFileName()
     {
-        $this->createRoutes(CONFIG . 'core_routes.php');
+        $this->createRoutes(CONFIG . 'routes_core.php');
 
-        $this->exec('routes:build -n Riesenia\Core ' . CONFIG . 'core_routes.php');
+        $this->exec('routes:build -n Riesenia\Core ' . CONFIG . 'routes_core.php');
 
         // assert endpoints for core plugin
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -159,6 +159,35 @@ class RoutesCommandTest extends TestCase
 
         $body = \json_decode((string) $this->_response->getBody());
         $this->assertEquals(2, \count($body));
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->patch('/custom-index');
+        $this->assertResponseCode(404);
+    }
+
+    public function testExtRoutes()
+    {
+        $this->createRoutes(CONFIG . 'routes_ext.php');
+
+        $this->exec('routes:build -n Riesenia\Routing\App ' . CONFIG . 'routes_ext.php');
+
+        // add extension to routes
+        $file = CONFIG . 'routes_ext.php';
+        $content = \file_get_contents($file);
+        $pattern = "\n\$routes->scope('/', function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
+        $replacement = $pattern . "    \$builder->setExtensions(['json', 'xml']);\n";
+        $newContent = \str_replace($pattern, $replacement, $content);
+        \file_put_contents($file, $newContent);
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->patch('/item-products/add');
+        $this->assertResponseCode(200);
+
+        $this->patch('/item-products/add.json');
+        $body = (string) $this->_response->getBody();
+        $object = \json_decode($body);
+        $this->assertResponseCode(200);
+        $this->assertEquals($object, 'added');
     }
 
     private function createRoutes($file = CONFIG . 'routes_compiled.php'): void
