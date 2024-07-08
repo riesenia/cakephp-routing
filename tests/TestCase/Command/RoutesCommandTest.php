@@ -88,9 +88,9 @@ class RoutesCommandTest extends TestCase
 
     public function testWithNewFileName()
     {
-        $this->createRoutes(CONFIG . 'core_routes.php');
+        $this->createRoutes(CONFIG . 'routes_core.php');
 
-        $this->exec('routes:build -n Riesenia\Core ' . CONFIG . 'core_routes.php');
+        $this->exec('routes:build -n Riesenia\Core ' . CONFIG . 'routes_core.php');
 
         // assert endpoints for core plugin
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -167,7 +167,17 @@ class RoutesCommandTest extends TestCase
 
     public function testExtRoutes()
     {
-        $this->exec('routes:build -n Riesenia\Routing\App');
+        $this->createRoutes(CONFIG . 'routes_ext.php');
+
+        $this->exec('routes:build -n Riesenia\Routing\App ' . CONFIG . 'routes_ext.php');
+
+        // add extension to routes
+        $file = CONFIG . 'routes_ext.php';
+        $content = \file_get_contents($file);
+        $pattern = "\n\$routes->scope('/', function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
+        $replacement = $pattern . "    \$builder->setExtensions(['json', 'xml']);\n";
+        $newContent = \str_replace($pattern, $replacement, $content);
+        \file_put_contents($file, $newContent);
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->patch('/item-products/add');
@@ -208,6 +218,6 @@ class RoutesCommandTest extends TestCase
         parent::tearDown();
 
         // remove routes files
-        \array_map('unlink', \glob(CONFIG . '*routes*.php'));
+        \array_map('unlink', \glob(CONFIG . 'routes*.php'));
     }
 }

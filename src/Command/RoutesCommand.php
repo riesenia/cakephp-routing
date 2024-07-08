@@ -71,7 +71,6 @@ class RoutesCommand extends Command
             $plugin = $plugin ? ", ['plugin' => '{$plugin}']" : '';
 
             $phpCode .= "\n\$routes->scope('{$scope}'{$plugin}, function (\\Cake\\Routing\\RouteBuilder \$builder) {\n";
-            $phpCode .= "    \$builder->setExtensions(['json', 'xml']);\n";
 
             foreach ($routes as $value) {
                 $phpCode .= '    ' . $value->phpCode() . "\n";
