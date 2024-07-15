@@ -12,36 +12,22 @@ namespace Riesenia\Routing\Attribute;
 class Resources extends Route
 {
     /**
-     * Regular expression for auto increment IDs.
-     *
-     * @var string
-     */
-    public const ID = '[0-9]+';
-
-    /**
-     * Regular expression for UUIDs.
-     *
-     * @var string
-     */
-    public const UUID = '[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}';
-
-    /**
-     * @param string[]                                              $only
-     * @param array{method?: string, path?: string,action?: string} $map
-     * @param mixed[]                                               $connectOptions
-     * @param mixed[]                                               $actions
+     * @param string[] $only
+     * @param mixed[]  $actions
+     * @param mixed[]  $map
+     * @param mixed[]  $connectOptions
      */
     public function __construct(
+        protected string $id = '',
+        protected string $inflect = '',
         protected array $only = [],
-        protected array $map = [],
-        protected ?string $path = null,
-        protected array $connectOptions = [],
-        protected string $inflect = 'dasherize',
-        protected string $id = self::ID . '|' . self::UUID,
         protected array $actions = [],
-        protected ?string $prefix = null,
+        protected array $map = [],
+        protected string $prefix = '',
+        protected array $connectOptions = [],
+        protected string $path = '',
         protected string $scope = '/',
-        protected ?string $plugin = null
+        protected string $plugin = ''
     ) {
         $this->initialize();
     }
@@ -56,6 +42,15 @@ class Resources extends Route
      */
     protected function getOptions(): array
     {
-        return ['only' => $this->only, 'map' => $this->map, 'path' => $this->path, 'connectOptions' => $this->connectOptions, 'inflect' => $this->inflect, 'id' => $this->id, 'actions' => $this->actions, 'prefix' => $this->prefix];
+        return \array_filter([
+            'id' => $this->id,
+            'inflect' => $this->inflect,
+            'only' => $this->only,
+            'actions' => $this->actions,
+            'map' => $this->map,
+            'prefix' => $this->prefix,
+            'connectOptions' => $this->connectOptions,
+            'path' => $this->path
+        ]);
     }
 }

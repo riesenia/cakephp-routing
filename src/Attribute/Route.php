@@ -12,7 +12,7 @@ abstract class Route
 {
     protected string $controller;
     protected string $scope = '/';
-    protected ?string $plugin = null;
+    protected string $plugin = '';
 
     public function initialize(): void
     {
@@ -28,7 +28,7 @@ abstract class Route
         return $this->scope;
     }
 
-    public function getPlugin(): ?string
+    public function getPlugin(): string
     {
         return $this->plugin;
     }

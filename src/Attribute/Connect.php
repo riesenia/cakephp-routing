@@ -16,18 +16,15 @@ class Connect extends Route
     protected string $action;
 
     /**
-     * @param mixed[] $defaults An array describing the default route parameters.
-     *                          These parameters will be used by default and can supply routing parameters that are not dynamic.
-     * @param mixed[] $options  An array matching the named elements in the route to regular expressions which that element should match.
-     *                          Also contains additional parameters such as which routed parameters should be shifted into the passed
-     *                          arguments, supplying patterns for routing parameters and supplying the name of a custom routing class.
+     * @param mixed[] $defaults
+     * @param mixed[] $options
      */
     public function __construct(
         protected string $uri = '',
         protected array $defaults = [],
         protected array $options = [],
         protected string $scope = '/',
-        protected ?string $plugin = null
+        protected string $plugin = ''
     ) {
         $this->initialize();
     }
