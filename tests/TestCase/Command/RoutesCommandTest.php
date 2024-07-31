@@ -192,6 +192,10 @@ class RoutesCommandTest extends TestCase
 
     private function createRoutes($file = CONFIG . 'routes_compiled.php'): void
     {
+        if (!\file_exists(CONFIG)) {
+            \mkdir(CONFIG, 0777, true);
+        }
+
         if (!\file_exists(CONFIG . 'routes.php')) {
             \touch(CONFIG . 'routes.php');
         }

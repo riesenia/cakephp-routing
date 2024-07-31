@@ -29,8 +29,5 @@ jobs:
     - name: Run phpstan
       run: vendor/bin/phpstan analyse -c phpstan.neon
 
-    - name: Create directory
-      run: mkdir -p tests/test_app/config
-
     - name: Run phpunit
       run: vendor/bin/phpunit
