@@ -46,7 +46,7 @@ class RoutesCommandTest extends TestCase
         $this->get('/items/cool-item');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(5, \count($body));
     }
 
@@ -64,7 +64,7 @@ class RoutesCommandTest extends TestCase
         $this->get('api/authors');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(2, \count($body));
         $this->assertResponseCode(200);
 
@@ -123,7 +123,7 @@ class RoutesCommandTest extends TestCase
         $this->get('/custom-item');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(5, \count($body));
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -134,8 +134,20 @@ class RoutesCommandTest extends TestCase
         $this->get('/items/no-uri-name');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(5, \count($body));
+    }
+
+    public function testAddingPassedParams()
+    {
+        $this->exec('routes:build -n Riesenia\Routing\App');
+
+        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
+        $this->get('/items/no-uri-name-with-id/1');
+        $this->assertResponseCode(200);
+
+        $body = \json_decode($this->_getBodyAsString(), true);
+        $this->assertEquals(1, $body['id']);
     }
 
     public function testDashedRoutes()
@@ -150,14 +162,14 @@ class RoutesCommandTest extends TestCase
         $this->get('/item-products');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(2, \count($body));
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
         $this->get('/custom-index');
         $this->assertResponseCode(200);
 
-        $body = \json_decode((string) $this->_response->getBody());
+        $body = \json_decode($this->_getBodyAsString(), true);
         $this->assertEquals(2, \count($body));
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
@@ -222,6 +234,6 @@ class RoutesCommandTest extends TestCase
         parent::tearDown();
 
         // remove routes files
-        \array_map('unlink', \glob(CONFIG . 'routes*.php'));
+        # \array_map('unlink', \glob(CONFIG . 'routes*.php'));
     }
 }

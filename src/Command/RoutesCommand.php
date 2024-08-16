@@ -57,6 +57,7 @@ class RoutesCommand extends Command
 
                     $instance->setController($className);
                     $instance->setAction($method->getName());
+                    $instance->setParameters(\array_map(fn ($parameter) => $parameter->getName(), $method->getParameters()));
 
                     $routes[$instance->getScope() . ',' . $instance->getPlugin()][] = $instance;
                 }

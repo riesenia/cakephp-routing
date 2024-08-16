@@ -15,6 +15,9 @@ class Connect extends Route
 {
     protected string $action;
 
+    /** @var string[] */
+    protected array $parameters = [];
+
     /**
      * @param mixed[] $defaults
      * @param mixed[] $options
@@ -39,9 +42,17 @@ class Connect extends Route
         $this->action = $action;
     }
 
+    /**
+     * @param string[] $parameters
+     */
+    public function setParameters(array $parameters): void
+    {
+        $this->parameters = $parameters;
+    }
+
     protected function getUri(): string
     {
-        return (\str_starts_with($this->uri, '/') ? '' : '/' . Inflector::dasherize($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action));
+        return (\str_starts_with($this->uri, '/') ? '' : '/' . Inflector::dasherize($this->controller) . '/') . ($this->uri ?: Inflector::dasherize($this->action)) . (!$this->uri && $this->parameters ? '/' . \implode('/', \array_map(fn ($p) => '{' . $p . '}', $this->parameters)) : '');
     }
 
     /**
@@ -57,6 +68,12 @@ class Connect extends Route
      */
     protected function getOptions(): array
     {
-        return $this->options;
+        $options = $this->options;
+
+        if (!isset($options['pass']) && $this->parameters) {
+            $options['pass'] = $this->parameters;
+        }
+
+        return $options;
     }
 }
