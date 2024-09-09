@@ -10,7 +10,7 @@ namespace Riesenia\Routing\Attribute;
 
 use Cake\Utility\Inflector;
 
-#[\Attribute(\Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class Connect extends Route
 {
     protected string $action;
