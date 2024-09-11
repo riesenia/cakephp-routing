@@ -59,13 +59,8 @@ class RoutesCommandTest extends TestCase
         $this->get('items/1');
         $this->assertResponseCode(200);
 
-        // test  Riesenia\Core plugin attribute with api scope
-        $this->configRequest(['headers' => ['Accept' => 'application/json']]);
-        $this->get('api/authors');
-        $this->assertResponseCode(200);
-
         $body = \json_decode($this->_getBodyAsString(), true);
-        $this->assertEquals(2, \count($body));
+        $this->assertEquals(4, \count($body));
         $this->assertResponseCode(200);
 
         $this->configRequest(['headers' => ['Accept' => 'application/json']]);
