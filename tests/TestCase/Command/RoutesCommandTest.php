@@ -234,6 +234,6 @@ class RoutesCommandTest extends TestCase
         parent::tearDown();
 
         // remove routes files
-        # \array_map('unlink', \glob(CONFIG . 'routes*.php'));
+        \array_map('unlink', \glob(CONFIG . 'routes*.php'));
     }
 }
