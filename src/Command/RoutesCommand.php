@@ -21,6 +21,7 @@ class RoutesCommand extends Command
     public function execute(Arguments $args, ConsoleIo $io): void
     {
         $finder = (new ComposerFinder())
+            ->useAutoloading(false)
             ->inNamespace(\array_map(fn ($ns) => \trim($ns, '\\'), $args->getMultipleOption('namespace') ?? $this->defaultNamespaces()))
             ->path('Controller');
 
