@@ -22,7 +22,7 @@ class RoutesCommand extends Command
     {
         $finder = (new ComposerFinder())
             ->useAutoloading(false)
-            ->inNamespace(\array_map(fn ($ns) => \trim($ns, '\\'), $args->getMultipleOption('namespace') ?? $this->defaultNamespaces()))
+            ->inNamespace(\array_map(fn ($ns) => \trim($ns, '\\'), $args->getArrayOption('namespace') ?? $this->defaultNamespaces()))
             ->path('Controller');
 
         $routes = [];
